@@ -44,8 +44,17 @@ export default function Header() {
   }, [pathname]);
 
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    if (mobileOpen) {
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+    } else {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    };
   }, [mobileOpen]);
 
   useEffect(() => {
@@ -72,6 +81,18 @@ export default function Header() {
   };
 
   const headerSolid = scrolled || mobileOpen || openDropdown;
+  const onDark = !headerSolid;
+
+  // Conditional text color sets
+  const wordmarkMain   = onDark ? "text-white"     : "text-ink";
+  const wordmarkSub    = onDark ? "text-white/60"  : "text-ink-400";
+  const navInactive    = onDark ? "text-white/75 hover:text-white" : "text-ink-500 hover:text-ink";
+  const navActive      = onDark ? "text-white"     : "text-ink";
+  const phoneCls       = onDark ? "text-white/80 hover:text-white" : "text-ink-500 hover:text-ink";
+  const burgerLine     = onDark ? "bg-white"       : "bg-ink";
+  const ctaBtnCls      = onDark
+    ? "inline-flex items-center justify-center gap-2 px-5 py-3 text-[11px] tracking-widest2 uppercase font-semibold bg-white text-ink hover:bg-gold transition-colors duration-300"
+    : "inline-flex items-center justify-center gap-2 px-5 py-3 text-[11px] tracking-widest2 uppercase font-semibold bg-ink-900 text-white hover:bg-gold hover:text-ink transition-colors duration-300";
 
   return (
     <header
@@ -94,8 +115,8 @@ export default function Header() {
             />
           </div>
           <div className="hidden sm:flex flex-col leading-none">
-            <span className="font-display text-[17px] font-semibold tracking-wide text-ink">MAXVARO</span>
-            <span className="text-[10px] tracking-widest2 text-ink-400 mt-1">GROUP</span>
+            <span className={`font-display text-[17px] font-semibold tracking-wide transition-colors duration-300 ${wordmarkMain}`}>MAXVARO</span>
+            <span className={`text-[10px] tracking-widest2 mt-1 transition-colors duration-300 ${wordmarkSub}`}>GROUP</span>
           </div>
         </Link>
 
@@ -115,7 +136,7 @@ export default function Header() {
                   <Link
                     href={item.href}
                     className={`relative flex items-center gap-1.5 text-[13px] font-medium tracking-wide transition-colors duration-300
-                      ${active ? "text-ink" : "text-ink-500 hover:text-ink"}`}
+                      ${active ? navActive : navInactive}`}
                     aria-expanded={isOpen}
                     aria-haspopup="true"
                   >
@@ -146,7 +167,7 @@ export default function Header() {
                 href={item.href}
                 onMouseEnter={() => handleEnter(null)}
                 className={`relative text-[13px] font-medium tracking-wide transition-colors duration-300
-                  ${active ? "text-ink" : "text-ink-500 hover:text-ink"}`}
+                  ${active ? navActive : navInactive}`}
               >
                 {item.label}
                 <span
@@ -158,30 +179,32 @@ export default function Header() {
           })}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-4">
           <a
             href={`tel:${site.phoneRaw}`}
-            className="text-[13px] font-semibold tracking-wide text-ink-500 hover:text-ink transition-colors"
+            className={`text-[13px] font-semibold tracking-wide transition-colors duration-300 ${phoneCls}`}
           >
             {site.phone}
           </a>
-          <Link href="/iletisim" className="btn btn-primary !py-3 !px-5 !text-[11px]">
+          <Link href="/iletisim" className={ctaBtnCls}>
             İletişim
           </Link>
         </div>
 
+        {/* Mobile burger */}
         <button
           type="button"
           onClick={() => setMobileOpen((v) => !v)}
           aria-label={mobileOpen ? "Menüyü kapat" : "Menüyü aç"}
           aria-expanded={mobileOpen}
-          className="lg:hidden relative z-10 h-10 w-10 grid place-items-center"
+          aria-controls="mobile-menu"
+          className="lg:hidden relative z-50 -mr-2 h-12 w-12 grid place-items-center touch-manipulation"
         >
           <span className="sr-only">Menü</span>
           <div className="relative h-4 w-6">
-            <span className={`absolute left-0 right-0 h-[1.5px] bg-ink transition-all duration-300 ${mobileOpen ? "top-1/2 -translate-y-1/2 rotate-45" : "top-0"}`} />
-            <span className={`absolute left-0 right-0 h-[1.5px] bg-ink transition-all duration-300 ${mobileOpen ? "opacity-0" : "top-1/2 -translate-y-1/2"}`} />
-            <span className={`absolute left-0 right-0 h-[1.5px] bg-ink transition-all duration-300 ${mobileOpen ? "top-1/2 -translate-y-1/2 -rotate-45" : "bottom-0"}`} />
+            <span className={`absolute left-0 right-0 h-[1.5px] transition-all duration-300 ${burgerLine} ${mobileOpen ? "top-1/2 -translate-y-1/2 rotate-45" : "top-0"}`} />
+            <span className={`absolute left-0 right-0 h-[1.5px] transition-all duration-300 ${burgerLine} ${mobileOpen ? "opacity-0" : "top-1/2 -translate-y-1/2"}`} />
+            <span className={`absolute left-0 right-0 h-[1.5px] transition-all duration-300 ${burgerLine} ${mobileOpen ? "top-1/2 -translate-y-1/2 -rotate-45" : "bottom-0"}`} />
           </div>
         </button>
       </Container>
@@ -196,7 +219,6 @@ export default function Header() {
           <div className="bg-white border-t border-ink-100 shadow-cardHover">
             <Container className="py-10 lg:py-12">
               <div className="grid grid-cols-12 gap-10">
-                {/* Left: intro */}
                 <div className="col-span-4">
                   <div className="eyebrow text-gold-dark mb-4 flex items-center gap-3">
                     <span className="h-px w-8 bg-current opacity-60" />
@@ -216,7 +238,6 @@ export default function Header() {
                   </Link>
                 </div>
 
-                {/* Right: services grid */}
                 <div className="col-span-8">
                   <ul className="grid grid-cols-2 gap-px bg-ink-100 border border-ink-100">
                     {dropdownData[openDropdown].items.map((sub) => {
@@ -258,11 +279,17 @@ export default function Header() {
 
       {/* Mobile menu */}
       <div
-        className={`lg:hidden fixed inset-0 top-[72px] bg-white transition-all duration-500 ease-smooth
-          ${mobileOpen ? "opacity-100 visible" : "opacity-0 invisible pointer-events-none"}`}
+        id="mobile-menu"
+        role="dialog"
+        aria-modal="true"
+        aria-hidden={!mobileOpen}
+        className={`lg:hidden fixed left-0 right-0 bottom-0 top-[72px] bg-white transition-all duration-400 ease-smooth
+          ${mobileOpen
+            ? "opacity-100 visible translate-y-0"
+            : "opacity-0 invisible -translate-y-2 pointer-events-none"}`}
       >
-        <div className="h-full overflow-y-auto">
-          <Container className="py-10">
+        <div className="h-full overflow-y-auto overscroll-contain">
+          <Container className="py-8 pb-24">
             <nav className="flex flex-col">
               {navigation.map((item, i) => {
                 const active = isActive(item.href);
@@ -272,9 +299,9 @@ export default function Header() {
                 return (
                   <div
                     key={item.href}
-                    style={{ transitionDelay: mobileOpen ? `${i * 60}ms` : "0ms" }}
+                    style={{ transitionDelay: mobileOpen ? `${80 + i * 50}ms` : "0ms" }}
                     className={`border-b border-ink-100 transition-all duration-500
-                      ${mobileOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"}`}
+                      ${mobileOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-3"}`}
                   >
                     {hasDropdown ? (
                       <>
@@ -287,10 +314,14 @@ export default function Header() {
                           </Link>
                           <button
                             type="button"
-                            onClick={() => setMobileExpanded(expanded ? null : item.dropdown)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setMobileExpanded(expanded ? null : item.dropdown);
+                            }}
                             aria-label={expanded ? "Alt menüyü kapat" : "Alt menüyü aç"}
                             aria-expanded={expanded}
-                            className="px-3 grid place-items-center text-ink-500"
+                            className="px-4 grid place-items-center text-ink-500 touch-manipulation"
                           >
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" className={`h-5 w-5 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}>
                               <polyline points="6 9 12 15 18 9" />
@@ -328,7 +359,12 @@ export default function Header() {
                           ${active ? "text-ink" : "text-ink-700"}`}
                       >
                         <span className="font-display text-2xl">{item.label}</span>
-                        <span className="text-gold opacity-0 group-hover:opacity-100 transition-opacity">→</span>
+                        <span className={`transition-all duration-300 ${active ? "text-gold opacity-100" : "text-ink-300 group-hover:text-gold group-hover:opacity-100"}`}>
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5">
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                            <polyline points="12 5 19 12 12 19" />
+                          </svg>
+                        </span>
                       </Link>
                     )}
                   </div>
@@ -336,18 +372,20 @@ export default function Header() {
               })}
             </nav>
 
-            <div className="mt-10 space-y-3">
-              <a href={`tel:${site.phoneRaw}`} className="block text-ink-500">
+            <div className="mt-10 space-y-5">
+              <a href={`tel:${site.phoneRaw}`} className="block">
                 <div className="eyebrow text-gold-dark mb-1">Telefon</div>
                 <div className="text-lg font-medium text-ink">{site.phone}</div>
               </a>
-              <a href={`mailto:${site.email}`} className="block text-ink-500">
+              <a href={`mailto:${site.email}`} className="block">
                 <div className="eyebrow text-gold-dark mb-1">E-posta</div>
-                <div className="text-lg font-medium text-ink">{site.email}</div>
+                <div className="text-lg font-medium text-ink break-all">{site.email}</div>
               </a>
-              <a href={site.whatsapp} target="_blank" rel="noopener noreferrer" className="btn btn-gold mt-4 w-full">
-                WhatsApp ile İletişim
-              </a>
+              <div className="pt-2">
+                <a href={site.whatsapp} target="_blank" rel="noopener noreferrer" className="btn btn-gold w-full">
+                  WhatsApp ile İletişim
+                </a>
+              </div>
             </div>
           </Container>
         </div>
