@@ -1,8 +1,9 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function ProjectCard({ project, priority = false }) {
   return (
-    <article className="group block">
+    <Link href={`/projeler/${project.slug}`} className="group block">
       <div className="media-zoom relative aspect-[4/5] w-full overflow-hidden bg-ink-100">
         <Image
           src={project.cover}
@@ -12,7 +13,6 @@ export default function ProjectCard({ project, priority = false }) {
           priority={priority}
           className="object-cover"
         />
-        {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-ink-900/80 via-ink-900/10 to-transparent transition-opacity duration-700 group-hover:opacity-90" />
         <div className="absolute top-5 left-5">
           <span className="inline-flex items-center px-3 py-1 bg-white/95 text-ink text-[10px] tracking-widest2 uppercase font-semibold">
@@ -33,6 +33,6 @@ export default function ProjectCard({ project, priority = false }) {
           </div>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }
